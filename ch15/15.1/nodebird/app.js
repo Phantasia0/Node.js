@@ -26,6 +26,7 @@ const passportConfig = require('./passport');
 const logger = require('./logger');
 
 const app = express();
+const {expressCspHeader, INLINE, NONE, SELF } = require('express-csp-header');
 passportConfig();
 app.set('port',process.env.PORT || 8001);
 app.set('view engine', 'html');
@@ -49,6 +50,12 @@ if(process.env.NODE_ENV==='production'){
 }else{
     app.use(morgan('dev'));
 }
+app.use(expressCspHeader({
+    directives: {
+        'script-src' : [SELF, INLINE, "https://unpkg.com"],
+    }
+}));
+
 app.use(express.static(path.join(__dirname,'public')));
 app.use('/img',express.static(path.join(__dirname,'uploads')));
 app.use(express.json());
